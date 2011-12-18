@@ -36,21 +36,35 @@
 		<tr>
 			{% for match in list%}
 			<td>
-			<h3 class="product-name"><a href="#"
-				title="{{match.hometeam}}vs{{match.awayteam}}">{{match.hometeam}}vs{{match.awayteam}}</a>
+			<h3 class="product-name"><a href="http://www.google.com.hk/search?q={{match.hometeam}}+{{match.awayteam}}"
+				title="{{match.hometeam}}vs{{match.awayteam}}"  target="_blank">({{match.lega}}) {{match.hometeam}}vs{{match.awayteam}}</a>
 			</h3>
-			<a class="product-/image" href="#"> <img
-				src="/image/lega/coke.gif" alt="{{match.lega}}"
-				title="{{match.lega}}" width="130" height="130" /> </a>
+			{% ifequal match.lega "NBA" %}
+			<div style="width:130px;height:150px;background:url('/image/lega/nba.png') no-repeat scroll left 2px transparent"></div>
+			{% else %}{% ifequal match.lega "中超" %}
+			<div style="width:130px;height:150px;background:url('/image/lega/csl.jpg') no-repeat scroll left 2px transparent"></div>
+			{% else %}{% ifequal match.lega "意甲" %}
+			<div style="width:130px;height:150px;background:url('/image/lega/legaa.jpg') no-repeat scroll left 2px transparent"></div>
+			{% else %}{% ifequal match.lega "英超" %}
+			<div style="width:130px;height:150px;background:url('/image/lega/premier.jpg') no-repeat scroll left 2px transparent"></div>
+			{% else %}{% ifequal match.lega "欧联" %}
+			<div style="width:130px;height:150px;background:url('/image/lega/uefa.jpg') no-repeat scroll left 2px transparent"></div>
+			{% else %}{% ifequal match.lega "西甲" %}
+			<div style="width:130px;height:150px;background:url('/image/lega/lfp.jpg') no-repeat scroll left 2px transparent"></div>
+			{% else %}{% ifequal match.lega "亚冠杯" %}
+			<div style="width:130px;height:150px;background:url('/image/lega/afc.jpg') no-repeat scroll left 2px transparent"></div>
+			{% else %}
+			<div style="width:130px;height:150px;background:url('/image/lega/coke.gif') no-repeat scroll left 2px transparent"></div>
+			{% endifequal %}{% endifequal %}{% endifequal %}{% endifequal %}{% endifequal %}{% endifequal %}{% endifequal %}
 			<div class="price-box"><span class="regular-price"
-				id="product-price-5"><span class="price">{{match.final}}</span>
+				id="product-price-5"><span class="price">{{match.matchtime}}<br/>盘口： {{match.final}}</span>
 			</span></div>
 			<a href="/bet/{{match.id}}/3">
-			<button class="button"><span>主</span></button>
-			</a><a href="/bet/{{match.id}}/1">
-			<button class="button"><span>平</span></button>
-			</a><a href="/bet/{{match.id}}/0">
-			<button class="button"><span>客</span></button>
+			<button class="button" onclick="window.location='/bet/{{match.id}}/3'"><span>主</span></button>
+			</a>&nbsp;<a href="/bet/{{match.id}}/1">
+			<button class="button" onclick="window.location='/bet/{{match.id}}/1'"><span>平</span></button>
+			</a>&nbsp;<a href="/bet/{{match.id}}/0">
+			<button class="button" onclick="window.location='/bet/{{match.id}}/0'"><span>客</span></button>
 			</a></td>
 			{% endfor%}
 		</tr>

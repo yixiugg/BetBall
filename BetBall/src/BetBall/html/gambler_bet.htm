@@ -30,48 +30,48 @@
 {% include 'admin_left.htm' %}
 </div>
 <div class="home-col-2">
-<h2>All gamblers</h2>
+<h2>{{gambler.name}}({{gambler.eid}})'s bet</h2>
 <br/>
 <table class="products-grid bestselling" id="products-grid-table">
 	<tbody>
 		<tr>
-			<td><h3>EID</h3>
+			<td><h3>Date</h3>
 			</td>
 			<td>
-			<h3>Name</h3>
+			<h3>Match</h3>
 			</td>
 			<td>
-			<h3>Balance</h3>
+			<h3>Result</h3>
 			</td>
 			<td>
-			<h3>Register Time</h3>
+			<h3>Bet</h3>
+			</td>
+			<td>
 			</td>
 			<td>
 			</td>
 		</tr>
-		{% for gambler in list%}
+		{% for bet in list%}
 		<tr>
 			<td>
-			{{gambler.eid}}
+			{{bet.bettime}}
 			</td>
 			<td>
-			{{gambler.name}}
+			{{bet.match.hometeam}}vs{{bet.match.awayteam}}
 			</td>
 			<td>
-			{{gambler.balance}}
+			{{bet.match.result}}
 			</td>
 			<td>
-			{{gambler.regtime}}
+			{{bet.result}}
 			</td>
 			<td>
-			{% ifequal gambler.state "0"%}
-			<button class="button" onclick="javascript:window.location='/openGambler/{{gambler.id}}'"><span>Open!</span></button>
-			{% else %}
-			<button class="button" onclick="javascript:window.location='/closeGambler/{{gambler.id}}'"><span>Close!</span></button>
+			{% ifequal bet.state "0"%}
+			<button class="button" onclick="javascript:window.location='/settle/{{bet.id}}'"><span>Settle</span></button>
 			{% endifequal %}
-			&nbsp;
-			<button class="button" onclick="javascript:window.location='/viewGamblerBet/{{gambler.id}}'"><span>Bets</span></button>
-			
+			{% ifequal bet.state "1"%}
+			<button class="button" onclick="javascript:window.location='/clean/{{bet.id}}'"><span>Clean</span></button>
+			{% endifequal %}
 			</td>
 		</tr>
 		{% endfor%}

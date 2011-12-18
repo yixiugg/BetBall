@@ -29,7 +29,8 @@ class Transaction(models.Model):
     bet = models.IntegerField(4)
     match = models.ForeignKey(Match)
     result = models.CharField(max_length=1)
-
+    state = models.CharField(max_length=1)
+    
 class Position(models.Model):
     match = models.ForeignKey(Match)
     position = models.CharField(max_length=50)

@@ -4,11 +4,12 @@ Created on 2011-3-20
 @author: yixiugg
 '''
 #coding=utf-8
-import datetime    
+import datetime,time    
 import getpass
 import os
 import md5
-from django.template import Context, loader
+from django.template import Context, loader,RequestContext
+from django.db.models import Q
 from django.http import *
 from BetBall.bet.timer import *
 from BetBall.bet.models import *  
@@ -20,9 +21,9 @@ def listTodayMatches(request):
         t = loader.get_template('login.htm')
         return HttpResponse(t.render(c))
     else:
-        gettime = datetime.date.today()  
-        list = Match.objects.filter(state='1', gettime=gettime)     
-        c = Context({'list':list}) 
+        now = datetime.datetime.now()  
+        list = Match.objects.filter(state='1', matchtime__gte=now)     
+        c = Context({'list':list,'session':request.session}) 
         t = loader.get_template('index.htm')
         return HttpResponse(t.render(c))
     
@@ -32,14 +33,14 @@ def viewMatches(request,year,month,date):
     date=int(date)    
     matchdate = datetime.date(year,month,date)  
     list = Match.objects.filter(state='1', matchdate=matchdate)      
-    c = Context({'list':list,'matchdate':matchdate}) 
+    c = Context({'list':list,'matchdate':matchdate,'session':request.session}) 
     t = loader.get_template('matches.htm')
     return HttpResponse(t.render(c))
 
 def listTodayAllMatches(request):    
-    gettime = datetime.date.today()    
-    list = Match.objects.filter(gettime=gettime)      
-    c = Context({'list':list}) 
+    now = datetime.datetime.now()    
+    list = Match.objects.filter(matchtime__gte=now)      
+    c = Context({'list':list,'session':request.session}) 
     t = loader.get_template('index.htm')
     return HttpResponse(t.render(c))
 
@@ -74,7 +75,7 @@ def closeGambler(request,id):
 def viewMatch(request):   
     matchdate = datetime.date.today()    
     list = Match.objects.filter(matchdate=matchdate)      
-    c = Context({'list':list}) 
+    c = Context({'list':list,'session':request.session}) 
     t = loader.get_template('index.htm')
     return HttpResponse(t.render(c))
 
@@ -136,7 +137,7 @@ def adminLogin(request):
             request.session['admin'] = m[0]
             gettime = datetime.date.today()    
             list = Match.objects.filter(gettime=gettime).order_by('state')      
-            c = Context({'list':list}) 
+            c = Context({'list':list,'session':request.session}) 
             t = loader.get_template('admin.htm')
             return HttpResponse(t.render(c))
         else:
@@ -168,7 +169,7 @@ def betMatch(request,id,r):
     gambler =  request.session.get('gambler')
     bets = Transaction.objects.filter(match=match,gambler=gambler)
     if len(bets)==0:
-        transaction = Transaction(match=match,gambler=gambler,bet=1,bettime=now,result=r)
+        transaction = Transaction(match=match,gambler=gambler,bet=1,bettime=now,result=r,state='0')
         transaction.save()
         return result("Thanks for your bet.")
     
@@ -184,7 +185,7 @@ def viewMatchBet(request):
         return result("You've not admin!")
     matchdate = datetime.date.today()    
     list = Match.objects.filter(matchdate=matchdate)      
-    c = Context({'list':list}) 
+    c = Context({'list':list,'session':request.session}) 
     t = loader.get_template('index.htm')
     return HttpResponse(t.render(c))
 
@@ -195,29 +196,52 @@ def viewGambler(request):
         c = Context({}) 
         return HttpResponse(t.render(c))
     list = Gambler.objects.all().order_by("-state") 
-    c = Context({'list':list}) 
+    c = Context({'list':list,'session':request.session}) 
     t = loader.get_template('gambler.htm')
     return HttpResponse(t.render(c))
  
-def admin(request):   
-    admin=request.session.get('admin')
+def admin(request): 
+    admin=request.session.get('admin')  
     if admin is None:
         t = loader.get_template('admin_login.htm')
         c = Context({}) 
         return HttpResponse(t.render(c))
-    gettime = datetime.date.today()    
-    list = Match.objects.filter(gettime=gettime).order_by('-state')      
-    c = Context({'list':list}) 
+    now = datetime.datetime.now()    
+    list = Match.objects.filter(matchtime__gte=now).order_by('-state','matchtime')        
+    c = Context({'list':list,'session':request.session}) 
     t = loader.get_template('admin.htm')
     return HttpResponse(t.render(c))
  
-def viewGamblerBet(request):   
-    if request.session.get('admin', None):
-        return result("You've not admin!")
-    matchdate = datetime.date.today()    
-    list = Match.objects.filter(matchdate=matchdate)      
-    c = Context({'list':list}) 
-    t = loader.get_template('index.htm')
+def lega(request,lega): 
+    admin=request.session.get('admin')  
+    if admin is None:
+        t = loader.get_template('admin_login.htm')
+        c = Context({}) 
+        return HttpResponse(t.render(c))
+    now = datetime.datetime.now()    
+    list = Match.objects.filter(matchtime__gte=now,lega=lega).order_by('-state','matchtime')        
+    c = Context({'list':list,'session':request.session}) 
+    t = loader.get_template('admin.htm')
+    return HttpResponse(t.render(c))
+    
+def opened(request):   
+    admin=request.session.get('admin')
+    if admin is None:
+        return adminresult("You've not admin!")
+    list = Match.objects.filter(state='1').order_by('-gettime')      
+    c = Context({'list':list,'session':request.session}) 
+    t = loader.get_template('opened.htm')
+    return HttpResponse(t.render(c))
+ 
+def viewGamblerBet(request,id): 
+    admin=request.session.get('admin')
+    if admin is None:
+        return adminresult("You've not admin!")
+    id=int(id)
+    gambler = Gambler.objects.get(id=id)    
+    list = Transaction.objects.filter(gambler=gambler).order_by('-bettime')       
+    c = Context({'list':list,'gambler':gambler,'session':request.session}) 
+    t = loader.get_template('gambler_bet.htm')
     return HttpResponse(t.render(c))
 
 def refreshMatches(request):   
@@ -234,7 +258,7 @@ def myaccount(request):
         t = loader.get_template('login.htm')
         return HttpResponse(t.render(c))
     else:
-        c = Context({'gambler':gambler}) 
+        c = Context({'gambler':gambler,'session':request.session}) 
         t = loader.get_template('my.htm')
         return HttpResponse(t.render(c))
     
@@ -269,7 +293,7 @@ def mybet(request):
         return HttpResponse(t.render(c))
     else:
         bets = Transaction.objects.filter(gambler=gambler).order_by('-bettime')
-        c = Context({'gambler':gambler,'bets':bets}) 
+        c = Context({'gambler':gambler,'bets':bets,'session':request.session}) 
         t = loader.get_template('mybet.htm')
         return HttpResponse(t.render(c))
 
@@ -285,7 +309,92 @@ def adminresult(r):
 
 def search(request):
     key=request.GET['q']
-    list = Match.objects.filter(hometeam__contains=key, awayteam__contains=key)  
-    c = Context({'list':list,'key':key}) 
+    list = Match.objects.filter(Q(lega__icontains=key)|Q(hometeam__icontains=key)|Q(awayteam__icontains=key))  
+    now = datetime.datetime.now()
+    c = Context({'list':list,'key':key,'now':now,'session':request.session}) 
     t = loader.get_template('search.htm')
     return HttpResponse(t.render(c))  
+
+def clean(request,id):
+    admin=request.session.get('admin')
+    if admin is None:
+        return adminresult("You've not admin!")
+    id=int(id)
+    transaction = Transaction.objects.get(id=id) 
+    transaction.state='2'
+    transaction.save()
+    return adminresult("Transaction clean!") 
+
+def settle(request,id):
+    admin=request.session.get('admin')
+    if admin is None:
+        return adminresult("You've not admin!")
+    id=int(id)
+    bet = Transaction.objects.get(id=id)
+    if bet.match.result is not None and bet.match.result!="":
+        if bet.match.result==bet.result:
+            bet.gambler.balance=( bet.gambler.balance+1)
+            bet.bet=1
+        else:
+            bet.gambler.balance=( bet.gambler.balance-1)
+            bet.bet=-1
+    bet.state='1'
+    bet.save()
+    return adminresult("Transaction settled!")    
+
+
+def cancelBet(request,id):
+    id=int(id)
+    transaction = Transaction.objects.get(id=id) 
+    matchtime = transaction.match.matchtime
+    now = datetime.datetime.now()
+    if now>matchtime:
+        return result("Match is over, you cannot cancel this bet!")   
+    else:  
+        transaction.delete() 
+        return result("Transaction clean!")     
+    
+def viewMatchBets(request,id):
+    id=int(id)
+    match = Match.objects.get(id=id) 
+    bets = Transaction.objects.filter(match=match).order_by('-bettime') 
+    c = Context({'list':bets,'match':match,'session':request.session}) 
+    t = loader.get_template('match_bet.htm')
+    return HttpResponse(t.render(c))
+
+def setResult(request,id,r):
+    id=int(id)
+    result=int(r)
+    match = Match.objects.get(id=id) 
+    match.result=result
+    match.save()
+    bets = Transaction.objects.filter(match=match).order_by('-bettime') 
+    for bet in bets:
+        if bet.state!='1':
+            if bet.result==r:
+                bet.gambler.balance=( bet.gambler.balance+1)
+                bet.bet=1
+            else:
+                bet.gambler.balance=( bet.gambler.balance-1)
+                bet.bet=-1
+            bet.gambler.save()
+        bet.state='1'
+        bet.save()
+    return adminresult("Set result succeed!")    
+
+ 
+def addMatch(request):  
+    t =time.strptime(request.POST['matchtime'], "%Y-%m-%d %H:%M:%S")
+    y,m,d,h,M,s = t[0:6]
+    matchtime=datetime.datetime(y,m,d,h,M,s)
+    matchdate=datetime.date(y,m,d)
+    lega=request.POST['lega'];
+    water=request.POST['water'];
+    hometeam=request.POST['hometeam'];
+    awayteam=request.POST['awayteam'];
+    match = Match(gettime=datetime.datetime.now(),lega=lega,matchtime=matchtime,matchdate=matchdate,hometeam=hometeam,awayteam=awayteam,state='1',final=water)
+    match.save()
+    return adminresult("Add match succeed!") 
+    
+def setSession(c,request):
+    c['session']=request.session

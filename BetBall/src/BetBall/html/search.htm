@@ -73,14 +73,19 @@
 			{{match.final}}
 			</td>
 			<td>
+			{% if match.matchtime > now %} 
+			<a href="/bet/{{match.id}}/3">
+			<button class="button"><span>主</span></button>
+			</a><a href="/bet/{{match.id}}/1">
+			<button class="button"><span>平</span></button>
+			</a><a href="/bet/{{match.id}}/0">
+			<button class="button"><span>客</span></button>
+			</a>
+			{% else %}
 			{{match.result}}
+			{% endif %}
 			</td>
 			<td>
-			{% ifequal match.state "0"%}
-			<button class="button" onclick="javascript:window.location='/openMatch/{{match.id}}'"><span>Open!</span></button>
-			{% else %}
-			<button class="button" onclick="javascript:window.location='/closeMatch/{{match.id}}'"><span>Close!</span></button>
-			{% endifequal %}
 			</td>
 		</tr>
 		{% endfor%}

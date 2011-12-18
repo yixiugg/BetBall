@@ -63,8 +63,8 @@ class MyHtmlParser(HTMLParser):
             self.caption = 0;
                 
     def getListFromUrl(self,url):
-        #sock = urllib.urlopen(url, proxies={'http' : 'http://proxy.statestr.com:80'}) 
-        sock = urllib.urlopen(url) 
+        sock = urllib.urlopen(url, proxies={'http' : 'http://proxy.statestr.com:80'}) 
+        #sock = urllib.urlopen(url) 
         htm = sock.read()    
         htm = unicode(htm, 'gb2312','ignore').encode('utf-8','ignore')
         self.feed(htm)

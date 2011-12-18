@@ -42,7 +42,9 @@
 											<td><h3>Match</h3></td>
 											<td><h3>Water</h3></td>
 											<td><h3>My bet</h3></td>
+											<td><h3>Cokes</h3></td>
 											<td><h3>Result</h3></td>
+											<td><h3></h3></td>
 										</tr>
 										{% for bet in bets%}
 										<tr>
@@ -50,7 +52,9 @@
 											<td>{{bet.match.lega}}-{{bet.match.hometeam}}VS{{bet.match.awayteam}}</td>
 											<td>{{bet.match.final}}</td>
 											<td>{{bet.result}}</td>
+											<td>{{bet.bet}}</td>
 											<td>{{bet.match.result}}</td>
+											<td><button class="button" onclick="javascript:window.location='/cancelBet/{{bet.id}}'"><span>Cancel!</span></button></td>
 										</tr>
 										{% endfor%}
 									</tbody>

@@ -33,6 +33,8 @@
 <h2>Today's all game</h2>
 <button class="button" onclick="javascript:window.location='/refreshMatches'"><span>Refresh Matches!</span></button>
 <br/>
+<a href="/opened">Opened Matches</a>
+<br/>
 <table class="products-grid bestselling" id="products-grid-table">
 	<tbody>
 		<tr>
@@ -65,7 +67,7 @@
 			{{match.matchtime}}
 			</td>
 			<td>
-			{{match.lega}}
+			<a href="/lega/{{match.lega}}">{{match.lega}}</a>
 			</td>
 			<td>
 			{{match.hometeam}}vs{{match.awayteam}}
