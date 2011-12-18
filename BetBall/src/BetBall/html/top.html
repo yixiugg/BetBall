@@ -1,0 +1,96 @@
+<script type="text/javascript" src="/image/my97/WdatePicker.js"></script>
+<script type="text/javascript">
+	function selectMatchDate(date){
+		if(date=="")
+			return;
+		window.location="/viewMatches/"+date;
+	}
+</script>
+<div class="header-container">
+				<div class="header">
+					<div class="col-1">
+						<h1 id="logo" class="logo" title="Magento Commerce"
+							onclick="location.href='/matches"
+							style="background-image: url(/image/logo.gif);">
+							<a href="#">Bet for Coke!</a>
+						</h1>
+					</div>
+					<div class="col-2">
+						<div class="search">
+							<div class="corner-right-bot">
+								<form id="search_mini_form"
+									action="/search"
+									method="get">
+									<fieldset class="form-search">
+										<legend>Search Site</legend>
+										<button type="submit" class="button">
+											<span></span>
+										</button>
+										<input id="search" class="input-text"
+											name="q" value="" type="text" />
+										<div class="clear"></div>
+										<div style="display: none;" id="search_autocomplete"
+											class="search-autocomplete"></div>
+									</fieldset>
+								</form>
+							</div>
+						</div>
+						<div class="clear"></div>
+						<ul class="links">
+							<li class="first">Welcome, {{request.session.gambler.eid}}</li>
+							<li><a href="/myaccount" title="My Account"
+								class="top-link-account">My Account</a></li>
+							<li class="last"><a href="/admin" title="Admin"
+								class="top-link-cart">Admin</a></li>
+						</ul>
+						<div class="clear"></div>
+						<fieldset class="form-language">
+							<label for="select-language">Select Date: </label> 
+							<input name="matchdate" class="Wdate" style="width:80px" onclick="WdatePicker()" onchange="selectMatchDate(this.value)"/>
+						</fieldset>
+
+					</div>
+					<div class="clear"></div>
+					<div class="menu">
+						<div class="border-bot">
+							<div class="border-left">
+								<div class="border-right">
+									<div class="corner-left-top">
+										<div class="corner-right-top">
+											<div class="corner-left-bot">
+												<div class="corner-right-bot">
+													<ul id="nav">
+														<li onmouseover="toggleMenu(this,1)"
+															onmouseout="toggleMenu(this,0)"
+															class="level0 nav-clothing.html parent"><a
+															href="/matches"><span>Home</span> </a>
+														</li>
+														<li onmouseover="toggleMenu(this,1)"
+															onmouseout="toggleMenu(this,0)"
+															class="level0 nav-clothing.html parent"><a
+															href="/mybet"><span>My Bet</span> </a>
+														</li>
+														<li onmouseover="toggleMenu(this,1)"
+															onmouseout="toggleMenu(this,0)"
+															class="level0 nav-clothing.html parent"><a
+															href="/recharge"><span>Recharge</span> </a>
+														</li>
+													</ul>
+
+													<script type="text/javascript">
+														if ($('nav').lastChild.tagName != 'LI') {
+															$('nav').lastChild.previousSibling.className += ' last-element'
+														} else {
+															$('nav').lastChild.className += ' last-element'
+														}
+													</script>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>

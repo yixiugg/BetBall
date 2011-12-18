@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<title>Bet for Coke!</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="description" content="Default Description" />
+<meta name="keywords" content="Magento, Varien, E-commerce" />
+<meta name="robots" content="INDEX,FOLLOW" />
+<script type="text/javascript">
+	
+</script>
+
+<link rel="stylesheet" type="text/css" href="/image/reset.css"
+	media="all" />
+<link rel="stylesheet" type="text/css" href="/image/styles.css"
+	media="all" />
+<link rel="stylesheet" type="text/css" href="/image/clears.css"
+	media="all" />
+<link rel="stylesheet" type="text/css" href="/image/print.css"
+	media="print" />
+</head>
+<body class="cms-index-index cms-home">
+<div class="wrapper">
+<div class="page">{% include 'top.html' %}
+<div class="main col1-layout">
+<div class="main-border">
+<div class="col-main">
+<div class="home-content-wrapper">
+<div class="home-col-1">
+{% include 'left.htm' %}
+</div>
+<div class="home-col-2">
+<h2>Search "{{key}}"</h2>
+<br/>
+<table class="products-grid bestselling" id="products-grid-table">
+	<tbody>
+		<tr>
+			<td><h3>Date</h3>
+			</td>
+			<td>
+			<h3>Match Time</h3>
+			</td>
+			<td>
+			<h3>Lega</h3>
+			</td>
+			<td>
+			<h3>Team</h3>
+			</td>
+			<td>
+			<h3>Water</h3>
+			</td>
+			<td>
+			<h3>result</h3>
+			</td>
+			<td>
+			</td>
+		</tr>
+		{% for match in list%}
+		<tr>
+			<td>
+			{{match.matchdate}}
+			</td>
+			<td>
+			{{match.matchtime}}
+			</td>
+			<td>
+			{{match.lega}}
+			</td>
+			<td>
+			{{match.hometeam}}vs{{match.awayteam}}
+			</td>
+			<td>
+			{{match.final}}
+			</td>
+			<td>
+			{{match.result}}
+			</td>
+			<td>
+			{% ifequal match.state "0"%}
+			<button class="button" onclick="javascript:window.location='/openMatch/{{match.id}}'"><span>Open!</span></button>
+			{% else %}
+			<button class="button" onclick="javascript:window.location='/closeMatch/{{match.id}}'"><span>Close!</span></button>
+			{% endifequal %}
+			</td>
+		</tr>
+		{% endfor%}
+
+	</tbody>
+</table>
+</div>
+<div class="clear"></div>
+</div>
+</div>
+</div>
+</div>
+{% include 'bottom.html' %}</div>
+</div>
+
+
+</body>
+</html>

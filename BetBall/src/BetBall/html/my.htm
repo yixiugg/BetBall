@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<title>Bet for Coke!</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="description" content="Default Description" />
+<meta name="keywords" content="Magento, Varien, E-commerce" />
+<meta name="robots" content="INDEX,FOLLOW" />
+<script type="text/javascript">
+	
+</script>
+
+<link rel="stylesheet" type="text/css" href="/image/reset.css"
+	media="all" />
+<link rel="stylesheet" type="text/css" href="/image/styles.css"
+	media="all" />
+<link rel="stylesheet" type="text/css" href="/image/clears.css"
+	media="all" />
+<link rel="stylesheet" type="text/css" href="/image/print.css"
+	media="print" />
+</head>
+<body class="cms-index-index cms-home">
+<div class="wrapper">
+<div class="page">{% include 'top.html' %}
+<div class="main col1-layout">
+<div class="main-border">
+<div class="col-main">
+
+<div class="home-content-wrapper">
+<div class="home-col-1">{% include 'left.htm' %}</div>
+<div class="home-col-2">
+<h2>My accoount</h2>
+<form id="loginForm" action="/updateAccount/" method="post">
+{% csrf_token %}
+<table class="products-grid bestselling" id="products-grid-table">
+	<tbody>
+		<tr>
+			<td>
+			<h3 class="product-name"><a href="#" title="balance">balance</a>
+			</h3>
+			<div class="price-box"><span class="regular-price"
+				id="product-price-5"><span class="price">{{gambler.balance}}
+			Cokes</span> </span></div>
+			</td>
+		</tr>
+		<tr>
+			<td><label for="username">name:</label> <input name="name"
+				id="name" class="input-text required-entry validate-email" value="{{gambler.name}}"
+				type="text" /></td>
+		</tr>
+		<tr>
+			<td><label for="password">old password:</label> <input
+				name="password" id="password"
+				class="input-text required-entry validate-email" type="password" />
+			</td>
+		</tr>
+		<tr>
+			<td><label for="password">new password:</label> <input
+				name="password1" id="password1"
+				class="input-text required-entry validate-email" type="password" />
+			</td>
+		</tr>
+		<tr>
+			<td><label for="password">new password again:</label> <input
+				name="password2" id="password2"
+				class="input-text required-entry validate-email" type="password" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<button type="submit" class="button"><span>Save Change</span></button>
+		</tr>
+	</tbody>
+</table>
+</form>
+</div>
+<div class="clear"></div>
+</div>
+</div>
+</div>
+</div>
+{% include 'bottom.html' %}</div>
+</div>
+
+
+</body>
+</html>

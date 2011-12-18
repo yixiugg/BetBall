@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<title>Bet for Coke!</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="description" content="Default Description" />
+<meta name="keywords" content="Magento, Varien, E-commerce" />
+<meta name="robots" content="INDEX,FOLLOW" />
+<script type="text/javascript">
+	
+</script>
+
+<link rel="stylesheet" type="text/css" href="/image/reset.css"
+	media="all" />
+<link rel="stylesheet" type="text/css" href="/image/styles.css"
+	media="all" />
+<link rel="stylesheet" type="text/css" href="/image/clears.css"
+	media="all" />
+<link rel="stylesheet" type="text/css" href="/image/print.css"
+	media="print" />
+</head>
+<body class="cms-index-index cms-home">
+	<div class="wrapper">
+		<div class="page">
+			{% include 'top.html' %}
+			<div class="main col1-layout">
+				<div class="main-border">
+					<div class="col-main">
+
+						<div class="home-content-wrapper">
+							<div class="home-col-1">
+								{% include 'left.htm' %}
+							</div>
+							<div class="home-col-2">
+								<h2>My bets</h2>
+
+								<table class="products-grid bestselling"
+									id="products-grid-table">
+									<tbody>
+										<tr>
+											<td><h3>Date/Time</h3></td>
+											<td><h3>Match</h3></td>
+											<td><h3>Water</h3></td>
+											<td><h3>My bet</h3></td>
+											<td><h3>Result</h3></td>
+										</tr>
+										{% for bet in bets%}
+										<tr>
+											<td>{{bet.match.matchtime}}</td>
+											<td>{{bet.match.lega}}-{{bet.match.hometeam}}VS{{bet.match.awayteam}}</td>
+											<td>{{bet.match.final}}</td>
+											<td>{{bet.result}}</td>
+											<td>{{bet.match.result}}</td>
+										</tr>
+										{% endfor%}
+									</tbody>
+								</table>
+							</div>
+							<div class="clear"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% include 'bottom.html' %}
+		</div>
+	</div>
+
+
+</body>
+</html>
