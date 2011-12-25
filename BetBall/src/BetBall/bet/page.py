@@ -1,19 +1,21 @@
-'''
-Created on 2011-3-20
-
-@author: yixiugg
-'''
 #coding=utf-8
 import datetime,time    
 import getpass
 import os
 import md5
+from weibo import APIClient
 from django.template import Context, loader,RequestContext
 from django.db.models import Q
 from django.http import *
 from BetBall.bet.timer import *
 from BetBall.bet.models import *  
-    
+
+APP_KEY = '3118024522' # app key of betball
+APP_SECRET = '95895b5b4556994a798224902af57d30' # app secret of betball
+CALLBACK_URL = 'http://127.0.0.1:8888/weiboLoginBack' # callback url
+token = '用户的Access token key'
+tokenSecret = '用户的Access token secret'
+
 def listTodayMatches(request):    
     gambler =  request.session.get('gambler')
     if gambler is None:
@@ -99,6 +101,16 @@ def login(request):
             return result("Your username and password didn't match.")
     else:
         return result("Your username and password didn't match.")
+
+def weiboLogin(request):
+    client = APIClient(app_key=APP_KEY, app_secret=APP_SECRET, redirect_uri=CALLBACK_URL)
+    url = client.get_authorize_url()
+    return HttpResponseRedirect(url) 
+
+def weiboLoginBack(request):
+    client = APIClient(app_key=APP_KEY, app_secret=APP_SECRET, redirect_uri=CALLBACK_URL)
+    print client.post.statuses__update(status=u'测试OAuth 2.0发微博')
+    return HttpResponseRedirect("/") 
 
 def register(request):  
     c = Context({}) 
