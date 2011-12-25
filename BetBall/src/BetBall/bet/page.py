@@ -11,11 +11,15 @@ from django.http import *
 from BetBall.bet.timer import *
 from BetBall.bet.models import *  
 
-APP_KEY = '3118024522' # app key of betball
-APP_SECRET = '95895b5b4556994a798224902af57d30' # app secret of betball
+#APP_KEY = '3118024522' # app key of betball
+#APP_SECRET = '95895b5b4556994a798224902af57d30' # app secret of betball
+#CALLBACK_URL = 'http://www.noya35.com/weiboLoginBack' # callback url
+
+APP_KEY = '2945318614' # app key of betball
+APP_SECRET = '26540ac5e2728be53005df042bc9bc00' # app secret of betball
 CALLBACK_URL = 'http://127.0.0.1:8888/weiboLoginBack' # callback url
-token = '用户的Access token key'
-tokenSecret = '用户的Access token secret'
+client = APIClient(app_key=APP_KEY, app_secret=APP_SECRET, redirect_uri=CALLBACK_URL)
+SITE_URL = 'http://www.noya35.com'
 
 def listTodayMatches(request):    
     gambler =  request.session.get('gambler')
@@ -52,6 +56,17 @@ def openMatch(request,id):
     match = Match.objects.get(id=id)
     match.state='1'
     match.save()
+    g = Gambler.objects.filter(~Q(weibo_nick=''),~Q(weibo_nick=None)) 
+    at_user=''
+    for gambler in g:
+        at_user+='@'+gambler.weibo_nick+' '
+    #发微博吸引投注！
+    status = u'亲们，又有比赛可以砸可乐拉！'+match.hometeam+'vs'+match.awayteam+'，您别b4啊！'+SITE_URL+' '+at_user
+    if client!=None:
+        expires_in = request.session.get('expires_in')
+        access_token = request.session.get('access_token')
+        client.set_access_token(access_token, expires_in)
+        client.post.statuses__update(status=status)
     return adminresult("Match open!")
 
 def closeMatch(request,id):   
@@ -116,6 +131,8 @@ def weiboLoginBack(request):
     access_token = r.access_token
     expires_in = r.expires_in
     # TODO: 在此可保存access token
+    request.session['access_token'] = access_token
+    request.session['expires_in'] = expires_in
     client.set_access_token(access_token, expires_in)
     #测试发微博
 #    status = u'亲们，俺刚才手快，测试了一把，您别b4啊！'
@@ -125,7 +142,7 @@ def weiboLoginBack(request):
     weibo_user = json_obj['statuses'] [0]['user']
     #得到用户的weibo UID
     weibo = weibo_user['id']
-    request.session['weibo_client'] = client
+#    request.session['weibo_client'] = client
     request.session['weibo'] = weibo
     #得到用户的微博nick
     weibo_nick = weibo_user['screen_name']
@@ -133,13 +150,19 @@ def weiboLoginBack(request):
     a = Admin.objects.filter(weibo=weibo)
     #先尝试admin登陆
     if len(a)!=0:
-        c = Context({'list':a,'session':request.session}) 
+        request.session['admin'] = a[0]
+        now = datetime.datetime.now()    
+        list = Match.objects.filter(matchtime__gte=now).order_by('-state','matchtime')     
+        c = Context({'list':list,'session':request.session}) 
         t = loader.get_template('admin.htm')
         return HttpResponse(t.render(c))
     #尝试用户登陆
     u = Gambler.objects.filter(weibo=weibo)
     if len(u)!=0:
-        request.session['gambler'] = u[0]
+        gambler = u[0]
+        request.session['gambler'] = gambler
+        gambler.weibo_nick=weibo_nick
+        gambler.save()
         return myaccount(request)
     else:
         c = Context({'info':'Please bind your account or register first!','session':request.session}) 
@@ -236,10 +259,12 @@ def betMatch(request,id,r):
         return result("Kidding! Match is over!")
     gambler =  request.session.get('gambler')
     bets = Transaction.objects.filter(match=match,gambler=gambler)
-    client = request.session.get('weibo_client')
     #下注自动发微博
-    status = u'亲们，俺刚才手快，砸了一罐可乐在上面'+match.hometeam+'vs'+match.awayteam+'，您别b4啊！'
+    status = u'亲们，俺刚才手快，砸了一罐可乐在上面'+match.hometeam+'vs'+match.awayteam+'，您别b4啊！'+SITE_URL
     if client!=None:
+        expires_in = request.session.get('expires_in')
+        access_token = request.session.get('access_token')
+        client.set_access_token(access_token, expires_in)
         client.post.statuses__update(status=status)
     if len(bets)==0:
         transaction = Transaction(match=match,gambler=gambler,bet=1,bettime=now,result=r,state='0')
