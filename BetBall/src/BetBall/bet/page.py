@@ -3,6 +3,7 @@ import datetime,time
 import getpass
 import os
 import md5
+import json
 from weibo import APIClient
 from django.template import Context, loader,RequestContext
 from django.db.models import Q
@@ -108,9 +109,59 @@ def weiboLogin(request):
     return HttpResponseRedirect(url) 
 
 def weiboLoginBack(request):
+    #得到微博认证的信息
+    code = request.GET['code']
     client = APIClient(app_key=APP_KEY, app_secret=APP_SECRET, redirect_uri=CALLBACK_URL)
-    print client.post.statuses__update(status=u'测试OAuth 2.0发微博')
+    r = client.request_access_token(code)
+    access_token = r.access_token
+    expires_in = r.expires_in
+    # TODO: 在此可保存access token
+    client.set_access_token(access_token, expires_in)
+    #得到微博用户的id，如果有绑定，则直接登录，没有则跳到绑定页面
+    json_obj = client.get.statuses__user_timeline()
+    weibo_user = json_obj['statuses'] [0]['user']
+    #得到用户的weibo UID
+    weibo = weibo_user['id']
+    request.session['weibo'] = weibo
+    #得到用户的微博nick
+    weibo_nick = weibo_user['screen_name']
+    request.session['weibo_nick'] = weibo_nick
+    a = Admin.objects.filter(weibo=weibo)
+    #先尝试admin登陆
+    if len(a)!=0:
+        c = Context({'list':a,'session':request.session}) 
+        t = loader.get_template('admin.htm')
+        return HttpResponse(t.render(c))
+    #尝试用户登陆
+    u = Gambler.objects.filter(weibo=weibo)
+    if len(u)!=0:
+        request.session['gambler'] = u[0]
+        return myaccount(request)
+    else:
+        c = Context({'info':'Please bind your account or register first!','session':request.session}) 
+        t = loader.get_template('bind.htm')
+        return HttpResponse(t.render(c))
     return HttpResponseRedirect("/") 
+
+def bind(request): 
+    m = Gambler.objects.filter(eid=request.POST['username'])      
+    pwd = md5.new(request.POST['password'])
+    pwd.digest()
+    if len(m)!=0:
+        if  m[0].password == pwd.hexdigest():
+            if m[0].state=='0':
+                return result("Account not active, please contact admin.")
+            else:
+                gambler = m[0]
+                request.session['gambler'] = gambler
+                weibo = request.session['weibo']
+                gambler.weibo = weibo
+                gambler.save() 
+                return myaccount(request)
+        else:
+            return result("Your username and password didn't match.")
+    else:
+        return result("Your username and password didn't match.")
 
 def register(request):  
     c = Context({}) 
@@ -119,6 +170,7 @@ def register(request):
     
 def saveRegister(request):  
     username = request.POST['username']
+    weibo = request.session['weibo']
     if username is None:
         c = Context({}) 
         t = loader.get_template('register.htm')
@@ -131,7 +183,7 @@ def saveRegister(request):
         return result("Username exsited.")
     else:
         name = request.POST['name']
-        gambler = Gambler(name=name,eid=username,password=pwd.hexdigest(),state='0',regtime=datetime.datetime.now(),balance=0)
+        gambler = Gambler(name=name,eid=username,weibo=weibo,password=pwd.hexdigest(),state='0',regtime=datetime.datetime.now(),balance=0)
         gambler.save()
         return result("Please wait for admin to approve your register.")
 

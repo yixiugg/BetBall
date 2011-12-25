@@ -44,6 +44,7 @@ urlpatterns = patterns('',
      (r'^myaccount/', myaccount),
      (r'^updateAccount/', updateAccount),
      (r'^mybet/', mybet),
+     (r'^bind/', bind),
      (r'^refreshMatches/', refreshMatches),
      (r'^image/(?P<path>.*)$', 'django.views.static.serve', {'document_root': os.path.dirname(globals()["__file__"]) + '/image'}),
      (r'^files/(?P<path>.*)$', 'django.views.static.serve', {'document_root': os.path.dirname(globals()["__file__"]) + '/html/files'})

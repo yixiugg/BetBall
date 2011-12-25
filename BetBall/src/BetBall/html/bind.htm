@@ -27,24 +27,18 @@
 <div class="col-main">
 <div class="home-content-wrapper">
 <div class="home-col-1">
-<h2>Lega!</h2>
-<ul>
-	<li><a href="/lega/uefa">欧冠</a></li>
-	<li><a href="/lega/premier">英超</a></li>
-	<li><a href="/lega/legaA">意甲</a></li>
-	<li><a href="/lega/lfp">西甲</a></li>
-	<li><a href="/lega/afc">亚冠</a></li>
-	<li><a href="/lega/csl">中超</a></li>
-</ul>
+{% include 'left.htm' %}
 </div>
 <div class="home-col-2">
-<h2>Admin Login</h2>
-<form id="loginForm" action="/adminLogin/" method="post">
+<h2>Bind Weibo</h2>
+<form id="loginForm" action="/bind/" method="post">
 {% csrf_token %}
 <table class="products-grid bestselling" id="products-grid-table">
 	<tbody>
 		<tr>
-			<td><label for="username">username:</label> <input
+			<td>Welcome, {{session.weibo_nick}}!  {{info}}</td>
+		<tr>
+			<td><label for="username">EID:</label> <input
 				name="username" id="username"
 				class="input-text required-entry validate-email" type="text" /></td>
 		</tr>
@@ -56,12 +50,9 @@
 		</tr>
 		<tr>
 			<td>
-			<button type="submit" class="button"><span>Submit</span>
-			</button>
-			</td>
-		</tr>
-		<tr>
-			<td><a href="/weiboLogin"><img src="/image/sina_login_btn.png"></a>
+			<input type="hidden" name="weibo" value="{{session.weibo}}"/>
+			<button type="submit" class="button"><span>Bind!</span>
+			</button> No Account? <a href="/register">register!</a>
 			</td>
 		</tr>
 	</tbody>
