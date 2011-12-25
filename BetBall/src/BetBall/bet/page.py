@@ -2,6 +2,7 @@
 import datetime,time    
 import getpass
 import os
+import sys
 import md5
 import json
 from weibo import APIClient
@@ -61,7 +62,7 @@ def openMatch(request,id):
     for gambler in g:
         at_user+='@'+gambler.weibo_nick+' '
     #发微博吸引投注！
-    status = u'亲们，又有比赛可以砸可乐拉！'+match.hometeam+'vs'+match.awayteam+'，您别b4啊！'+SITE_URL+' '+at_user
+    status = u'亲们，又有比赛可以砸可乐拉！'+match.hometeam+'vs'+match.awayteam+u'，您别b4啊！'+SITE_URL+' '+at_user
     if client!=None:
         expires_in = request.session.get('expires_in')
         access_token = request.session.get('access_token')
@@ -260,7 +261,7 @@ def betMatch(request,id,r):
     gambler =  request.session.get('gambler')
     bets = Transaction.objects.filter(match=match,gambler=gambler)
     #下注自动发微博
-    status = u'亲们，俺刚才手快，砸了一罐可乐在上面'+match.hometeam+'vs'+match.awayteam+'，您别b4啊！'+SITE_URL
+    status = u'亲们，俺刚才手快，砸了一罐可乐在上面'+match.hometeam+'vs'+match.awayteam+u'，您别b4啊！'+SITE_URL
     if client!=None:
         expires_in = request.session.get('expires_in')
         access_token = request.session.get('access_token')
