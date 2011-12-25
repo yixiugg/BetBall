@@ -117,11 +117,15 @@ def weiboLoginBack(request):
     expires_in = r.expires_in
     # TODO: 在此可保存access token
     client.set_access_token(access_token, expires_in)
+    #测试发微博
+#    status = u'亲们，俺刚才手快，测试了一把，您别b4啊！'
+#    client.post.statuses__update(status=status)
     #得到微博用户的id，如果有绑定，则直接登录，没有则跳到绑定页面
     json_obj = client.get.statuses__user_timeline()
     weibo_user = json_obj['statuses'] [0]['user']
     #得到用户的weibo UID
     weibo = weibo_user['id']
+    request.session['weibo_client'] = client
     request.session['weibo'] = weibo
     #得到用户的微博nick
     weibo_nick = weibo_user['screen_name']
@@ -232,6 +236,11 @@ def betMatch(request,id,r):
         return result("Kidding! Match is over!")
     gambler =  request.session.get('gambler')
     bets = Transaction.objects.filter(match=match,gambler=gambler)
+    client = request.session.get('weibo_client')
+    #下注自动发微博
+    status = u'亲们，俺刚才手快，砸了一罐可乐在上面'+match.hometeam+'vs'+match.awayteam+'，您别b4啊！'
+    if client!=None:
+        client.post.statuses__update(status=status)
     if len(bets)==0:
         transaction = Transaction(match=match,gambler=gambler,bet=1,bettime=now,result=r,state='0')
         transaction.save()
