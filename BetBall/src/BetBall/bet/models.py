@@ -6,6 +6,8 @@ class Gambler(models.Model):
     state = models.CharField(max_length=1)
     regtime = models.DateTimeField()
     password= models.CharField(max_length=32)
+    weibo = models.CharField(max_length=32)
+    weibo_nick = models.CharField(max_length=50)
 
 class Recharge(models.Model):
     gambler = models.ForeignKey(Gambler)
@@ -39,5 +41,7 @@ class Position(models.Model):
 class Admin(models.Model):
     username = models.CharField(max_length=50)
     password = models.CharField(max_length=50)
-    
+    weibo = models.CharField(max_length=32)
+    weibo_nick = models.CharField(max_length=50)
+
     
